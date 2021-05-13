@@ -56,20 +56,20 @@ public class SubUserClientExample {
 
   public static void main(String[] args) {
 
-    Long subUid = 120491258L;
+    Long subUid = 22097408L;
     SubUserClient subUserClient = SubUserClient.create(HuobiOptions.builder()
         .apiKey(Constants.API_KEY)
         .secretKey(Constants.SECRET_KEY)
         .build());
 
-    System.out.println("===========transfer to subuser ===============");
-    long outTransferId = subUserClient.transferSubuser(TransferSubuserRequest.builder()
-        .subUid(subUid)
-        .currency("usdt")
-        .amount(new BigDecimal("10"))
-        .type(TransferMasterTypeEnum.MASTER_TRANSFER_OUT)
-        .build());
-    System.out.println("===========transfer to subuser  result:" + outTransferId + "===============");
+//    System.out.println("===========transfer to subuser ===============");
+//    long outTransferId = subUserClient.transferSubuser(TransferSubuserRequest.builder()
+//        .subUid(subUid)
+//        .currency("usdt")
+//        .amount(new BigDecimal("10"))
+//        .type(TransferMasterTypeEnum.MASTER_TRANSFER_OUT)
+//        .build());
+//    System.out.println("===========transfer to subuser  result:" + outTransferId + "===============");
 
     List<AccountBalance> subAccountBalanceList = subUserClient.getSubuserAccountBalance(subUid);
     System.out.println(subAccountBalanceList);

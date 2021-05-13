@@ -31,4 +31,6 @@ public class Candlestick {
 
   private BigDecimal vol;
 
+  private String symbol;
+
 }

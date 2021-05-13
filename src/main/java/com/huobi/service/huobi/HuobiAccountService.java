@@ -97,6 +97,7 @@ public class HuobiAccountService implements AccountClient {
     return new AccountBalanceParser().parse(data);
   }
 
+  @Override
   public List<AccountHistory> getAccountHistory(AccountHistoryRequest request) {
 
     InputChecker.checker()
@@ -119,7 +120,9 @@ public class HuobiAccountService implements AccountClient {
       JSONObject jsonItem = jsonArray.getJSONObject(i);
       list.add(parser.parse(jsonItem));
     }
-    list.get(list.size()-1).setNextId(jsonObject.getLong("next-id"));
+    if(list.size() != 0){
+      list.get(list.size()-1).setNextId(jsonObject.getLong("next-id"));
+    }
     return list;
   }
 

@@ -30,6 +30,10 @@ public class OrdersRequest {
 
   private Date endDate;
 
+  private Date startTime;
+
+  private Date endTime;
+
   private Long startId;
 
   private Integer size;

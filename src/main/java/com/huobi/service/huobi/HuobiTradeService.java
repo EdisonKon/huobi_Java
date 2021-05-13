@@ -236,6 +236,8 @@ public class HuobiTradeService implements TradeClient {
         .putToUrl("types", request.getTypesString())
         .putToUrl("start-date", request.getStartDate(), "yyyy-MM-dd")
         .putToUrl("end-date", request.getEndDate(), "yyyy-MM-dd")
+        .putToUrl("start-time", request.getStartTime().getTime())
+        .putToUrl("end-time", request.getEndTime().getTime())
         .putToUrl("from", request.getStartId())
         .putToUrl("states", request.getStatesString())
         .putToUrl("size", request.getSize())

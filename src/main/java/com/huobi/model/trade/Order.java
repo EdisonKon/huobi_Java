@@ -49,4 +49,39 @@ public class Order {
   @JSONField(deserialize = false)
   private StopOrderOperatorEnum operator;
 
+  /**
+   * insert into persons
+   * (id_p, lastname , firstName, city )
+   *
+   * values
+   *
+   * (200,'haha' , 'deng' , 'shenzhen'),
+   *
+   * (201,'haha2' , 'deng' , 'GD'),
+   *
+   * (202,'haha3' , 'deng' , 'Beijing');
+   * @return
+   */
+  public String genSql(){
+    String sql = "(";
+    sql += ("\""+this.id+"\"");
+    sql += (",\""+this.symbol+"\"");
+    sql += (",\""+this.accountId+"\"");
+    sql += (",\""+this.amount+"\"");
+    sql += (",\""+this.price+"\"");
+    sql += (",\""+this.type+"\"");
+    sql += (",\""+this.filledAmount+"\"");
+    sql += (",\""+this.filledCashAmount+"\"");
+    sql += (",\""+this.filledFees+"\"");
+    sql += (",\""+this.source+"\"");
+    sql += (",\""+this.state+"\"");
+    sql += (",\""+this.createdAt+"\"");
+    sql += (",\""+this.canceledAt+"\"");
+    sql += (",\""+this.finishedAt+"\"");
+    sql += (","+(this.stopPrice == null?null:"0.0"));
+    sql += ")";
+
+    return sql;
+  }
+
 }
