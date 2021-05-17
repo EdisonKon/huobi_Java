@@ -17,7 +17,7 @@ public class CostEntity {
     private BigDecimal nowprice;
     private BigDecimal has;
     private BigDecimal price;
-    private BigDecimal curprice;
+    private BigDecimal totalprice;
     private BigDecimal getmoney;
     private String donull;
 

@@ -323,12 +323,30 @@ public class PerformanceTest {
     System.out.println(JSON.toJSONString(symbolList));
 
   }
+  /**
+   * 获取账户余额(各种支持的币种,usdt btc ht eth 等)
+   */
+  @Test
+  public void testGetAccount(){
+    Long accountId = 22097408L;
+    AccountClient accountClient = AccountClient.create(HuobiOptions.builder().apiKey(Constants.API_KEY).secretKey(Constants.SECRET_KEY).build());
+    AccountBalance accountBalance = accountClient.getAccountBalance(AccountBalanceRequest.builder().accountId(accountId).build());
+    List<Balance> trueBal = new ArrayList<>();
+    for (int i = 0; i < accountBalance.getList().size(); i++) {
+      if(accountBalance.getList().get(i).getBalance().doubleValue()>0){
+        trueBal.add(accountBalance.getList().get(i));
+      }
+    }
+    System.out.println("accountBalance:"+ JSON.toJSONString(trueBal));
+
+  }
+
 
   /**
    * 获取赚钱数
    * 调用时候更改datex
    */
-  static String datex = "2021-05-13 00:00:00";
+  static String datex = "2021-05-17 00:00:00";
   @Test
   public void getMoney(){
     //存在新交易
@@ -370,7 +388,7 @@ public class PerformanceTest {
    */
   @Test
   public void testGetCost(){
-    String sql = "select com.symbol,cost,(h.open*1) as nowprice, has,(cost*has) as price,(h.open*has) as curprice ,(IF (cost > 0,(h.open*has) - (cost*has),ABS(cost))) as getmoney , IF (cost > 0,'No','Yes') as donull from\n" +
+    String sql = "select com.symbol,cost,(h.open*1) as nowprice, has,(cost*has) as price,(h.open*has) as totalprice ,(IF (cost > 0,(h.open*has) - (cost*has),ABS(cost))) as getmoney , IF (cost > 0,'No','Yes') as donull from\n" +
             "(\n" +
             "select buysum.symbol , IF((bpt-IFNULL(spt,0))>0,(bpt-IFNULL(spt,0))/(bc-IFNULL(sc,0)),(bpt-IFNULL(spt,0))) as cost,(bc-IFNULL(sc,0)) as has  from \n" +
             "\n" +
@@ -434,11 +452,12 @@ public class PerformanceTest {
       map.put(keys.get(i),totals);
     }
 
-    final BigDecimal[] btcusdt = {new BigDecimal(0)};
+    final BigDecimal[] btcusdt = {new BigDecimal(0),new BigDecimal(0)};
 
     list.forEach(costEntity -> {
       if ("btcusdt".equals(costEntity.getSymbol())){
         btcusdt[0] = btcusdt[0].add(costEntity.getNowprice());
+        btcusdt[1] = btcusdt[1].add(costEntity.getCost());
       }else{
         List<Cell> cells = new ArrayList<Cell>();
         Object object=null;
@@ -453,7 +472,11 @@ public class PerformanceTest {
         }
         body.add(cells);
         if(!"btcusdt".equals(costEntity.getSymbol())){
-          System.out.println(costEntity.getSymbol()+"->赚了: "+mappingString(costEntity.getGetmoney())+("Yes".equals(costEntity.getDonull())?"->清仓 ":""));
+          double limit = 0.1;
+          if(costEntity.getSymbol().contains("btc")){
+            limit = 500;
+          }
+          System.out.println(costEntity.getSymbol()+"->赚了: "+mappingString(costEntity.getGetmoney())+("Yes".equals(costEntity.getDonull())?costEntity.getHas().doubleValue()>limit?"->净赚":"->清仓 ":""));
         }
         for (int i = 0; i < keys.size(); i++) {
           if(costEntity.getSymbol().endsWith(keys.get(i))){
@@ -462,6 +485,8 @@ public class PerformanceTest {
         }
       }
     });
+    System.out.println("=======================================================");
+    System.out.println("btcusdt成本价:"+mappingString(btcusdt[1]));
     System.out.println("=======================================================");
     //负数总数
     final BigDecimal[] bigfuusdt = {new BigDecimal(0)};
@@ -478,19 +503,19 @@ public class PerformanceTest {
               }
               BigDecimal reduce = v.stream().reduce(BigDecimal.ZERO, BigDecimal::add);
               System.out.println(k+"-->共赚-->"+mappingString(reduce));
-              if("btc".equals(k)){
-                reduce = reduce.multiply(btcusdt[0].multiply(new BigDecimal(6.6))).setScale(10,BigDecimal.ROUND_HALF_UP);
-              }else{
-                reduce = reduce.multiply(new BigDecimal(6.6)).setScale(10,BigDecimal.ROUND_HALF_UP);
-              }
-              System.out.println(k+"-->共赚rmb-->"+mappingString(reduce));
+//              if("btc".equals(k)){
+//                reduce = reduce.multiply(btcusdt[0].multiply(new BigDecimal(6.6))).setScale(10,BigDecimal.ROUND_HALF_UP);
+//              }else{
+//                reduce = reduce.multiply(new BigDecimal(6.6)).setScale(10,BigDecimal.ROUND_HALF_UP);
+//              }
+//              System.out.println(k+"-->共赚rmb-->"+mappingString(reduce));
             }
             );
 //    System.out.println(map.get("usdt"));
 
     System.out.println("=======================================================");
-    System.out.println("当前亏损中->btc 有关-亏损:"+ bigfubtc[0].multiply(btcusdt[0].multiply(new BigDecimal(6.6))).setScale(10,BigDecimal.ROUND_HALF_UP));
-    System.out.println("当前亏损中->usdt有关-亏损:"+ bigfuusdt[0].multiply(new BigDecimal(6.6)).setScale(10,BigDecimal.ROUND_HALF_UP));
+    System.out.println("当前亏损中->btc 有关-亏损:"+ bigfubtc[0].multiply(btcusdt[0]).setScale(10,BigDecimal.ROUND_HALF_UP));
+    System.out.println("当前亏损中->usdt有关-亏损:"+ bigfuusdt[0].setScale(10,BigDecimal.ROUND_HALF_UP));
     System.out.println("=======================================================");
     new ConsoleTable.ConsoleTableBuilder().addHeaders(header).addRows(body).build().print();
 
@@ -580,7 +605,7 @@ public class PerformanceTest {
 
     boolean needExec = false;
 
-    String sqlbase = "INSERT INTO huobi.horder (id, symbol, accountId, amount, price, `type`, filledAmount, filledCashAmount, filledFees, source, state, createdAt, canceledAt, finishedAt, stopPrice) VALUES";
+    String sqlbase = "REPLACE INTO huobi.horder (id, symbol, accountId, amount, price, `type`, filledAmount, filledCashAmount, filledFees, source, state, createdAt, canceledAt, finishedAt, stopPrice) VALUES\n";
 
     String sql = sqlbase;
     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
