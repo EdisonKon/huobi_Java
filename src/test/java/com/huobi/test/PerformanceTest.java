@@ -51,29 +51,7 @@ public class PerformanceTest {
    */
   static List<String> symbols = new ArrayList<>();
   static List<String> keys = new ArrayList<>();
-  static {
-    symbols.add("shibusdt");
-    symbols.add("eos3lusdt");
-    symbols.add("qunbtc");
-    symbols.add("lhbusdt");
-    symbols.add("dotusdt");
-    symbols.add("dacusdt");
-    symbols.add("enjusdt");
-    symbols.add("htusdt");
-    symbols.add("btcusdt");
-    symbols.add("ethusdt");
-    symbols.add("uniusdt");
-    symbols.add("dogeusdt");
-    //2021-5.11
-    symbols.add("mtnbtc");
-    symbols.add("achusdt");
-    //2021-5.12
-    symbols.add("pntbtc");
-    symbols.add("csprusdt");
-    //2021-5-13
-    symbols.add("actusdt");
-    symbols.add("bftbtc");
-  }
+
   static{
     keys.add("usdt");
     keys.add("btc");
@@ -346,7 +324,34 @@ public class PerformanceTest {
    * 获取赚钱数
    * 调用时候更改datex
    */
-  static String datex = "2021-05-17 00:00:00";
+
+  static {
+    symbols.add("shibusdt");
+    symbols.add("eos3lusdt");
+    symbols.add("qunbtc");
+    symbols.add("lhbusdt");
+    symbols.add("dotusdt");
+    symbols.add("dacusdt");
+    symbols.add("enjusdt");
+    symbols.add("htusdt");
+    symbols.add("btcusdt");
+    symbols.add("ethusdt");
+    symbols.add("uniusdt");
+    symbols.add("dogeusdt");
+    //2021-5.11
+    symbols.add("mtnbtc");
+    symbols.add("achusdt");
+    //2021-5.12
+    symbols.add("pntbtc");
+    symbols.add("csprusdt");
+    //2021-5-13
+    symbols.add("actusdt");
+    symbols.add("bftbtc");
+    //2021-5-19
+    symbols.add("dhtusdt");
+  }
+
+  static String datex = "2021-05-20 00:00:00";
   @Test
   public void getMoney(){
     //存在新交易
